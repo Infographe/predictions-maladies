@@ -6,11 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PredictionService {
-  private apiUrl = 'http://127.0.0.1:8000/predict';  // 🔥 Vérifie l'URL
+  private apiUrl = 'http://127.0.0.1:8000/predict';
 
   constructor(private http: HttpClient) {}
 
-  getPrediction(data: any): Observable<any> {
+  getPrediction(data: { feature1: number; feature2: number }): Observable<any> {
     return this.http.post<any>(this.apiUrl, data);
   }
 }

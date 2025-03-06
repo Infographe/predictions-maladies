@@ -1,19 +1,82 @@
-<div class="container">
-  <h2>Prédiction en temps réel</h2>
 
-  <form (submit)="envoyerDonnees(); $event.preventDefault()">
-    <label>Feature 1: <input type="number" [(ngModel)]="formData.feature1" name="feature1"></label>
-    <label>Feature 2: <input type="number" [(ngModel)]="formData.feature2" name="feature2"></label>
-    <label>Feature 3: <input type="number" [(ngModel)]="formData.feature3" name="feature3"></label>
-    <label>Feature 4: <input type="number" [(ngModel)]="formData.feature4" name="feature4"></label>
-    <label>Feature 5: <input type="number" [(ngModel)]="formData.feature5" name="feature5"></label>
 
-    <button type="submit" [disabled]="isLoading">
-      {{ isLoading ? '⏳ Prédiction en cours...' : '🔍 Lancer la prédiction' }}
-    </button>
-  </form>
+<mat-card class="prediction-card">
+  <mat-card-title>📊 Prédictions en temps réel</mat-card-title>
 
-  <div *ngIf="prediction !== null" class="prediction-result">
-    <h3>Résultat : {{ prediction }}</h3>
-  </div>
-</div>
+  <mat-card-content>
+    <form (ngSubmit)="envoyerDonnees()">
+      <div class="form-group">
+        <mat-form-field appearance="outline">
+          <mat-label>Feature 1</mat-label>
+          <input matInput type="number" [(ngModel)]="formData.feature1" name="feature1" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Feature 2</mat-label>
+          <input matInput type="number" [(ngModel)]="formData.feature2" name="feature2" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Feature 3</mat-label>
+          <input matInput type="number" [(ngModel)]="formData.feature3" name="feature3" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Feature 4</mat-label>
+          <input matInput type="number" [(ngModel)]="formData.feature4" name="feature4" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Feature 5</mat-label>
+          <input matInput type="number" [(ngModel)]="formData.feature5" name="feature5" required>
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit">🚀 Envoyer</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<!-- 🔥 Tableau des prédictions -->
+<mat-card class="history-card" *ngIf="historiquePredictions.length > 0">
+  <mat-card-title>📜 Historique des prédictions</mat-card-title>
+
+  <table mat-table [dataSource]="historiquePredictions" class="mat-elevation-z8">
+    
+    <ng-container matColumnDef="feature1">
+      <th mat-header-cell *matHeaderCellDef> Feature 1 </th>
+      <td mat-cell *matCellDef="let element"> {{element.feature1}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="feature2">
+      <th mat-header-cell *matHeaderCellDef> Feature 2 </th>
+      <td mat-cell *matCellDef="let element"> {{element.feature2}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="feature3">
+      <th mat-header-cell *matHeaderCellDef> Feature 3 </th>
+      <td mat-cell *matCellDef="let element"> {{element.feature3}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="feature4">
+      <th mat-header-cell *matHeaderCellDef> Feature 4 </th>
+      <td mat-cell *matCellDef="let element"> {{element.feature4}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="feature5">
+      <th mat-header-cell *matHeaderCellDef> Feature 5 </th>
+      <td mat-cell *matCellDef="let element"> {{element.feature5}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="prediction">
+      <th mat-header-cell *matHeaderCellDef> Prédiction </th>
+      <td mat-cell *matCellDef="let element"> {{element.prediction}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction'];"></tr>
+  </table>
+  <mat-card-actions *ngIf="prediction">
+    <p>✅ Prédiction : <strong>{{ prediction }}</strong></p>
+  </mat-card-actions>
+</mat-card>

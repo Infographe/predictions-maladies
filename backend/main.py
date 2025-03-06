@@ -4,6 +4,11 @@ import pickle
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
 
+
+# ✅ Charger le modèle ML
+with open("models/model.pkl", "rb") as f:
+    model = pickle.load(f)
+
 # Création de l'API
 app = FastAPI()
 
@@ -16,11 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Chargement du modèle .pkl
-with open("models/model.pkl", "rb") as f:
-    model = pickle.load(f)
 
-# Définition du format des données attendues
+# 📌 Modèle des données attendues par FastAPI
 class PredictionInput(BaseModel):
     feature1: float
     feature2: float
@@ -28,24 +30,19 @@ class PredictionInput(BaseModel):
     feature4: float
     feature5: float
 
-# Route pour la prédiction
 @app.post("/predict")
-async def predict(data: PredictionInput):
+def predict(data: dict):
+    print("🔹 Requête reçue:", data)  # 🔍 Voir si FastAPI reçoit bien la requête
+
     try:
-        # Conversion en array pour le modèle
-        input_data = np.array([[data.feature1, data.feature2, data.feature3, data.feature4, data.feature5]])
+        features = np.array([[data["feature1"], data["feature2"], data["feature3"], data["feature4"], data["feature5"]]])
+
+        prediction = model.predict(features)[0]
         
-        # Prédiction
-        prediction = model.predict(input_data)[0]
+        print("🔹 Prédiction effectuée:", prediction)  # 🔍 Voir la prédiction
         
-        return {"prediction": int(prediction)}
-    
+        return {"prediction": float(prediction)}
     except Exception as e:
+        print("❌ Erreur:", str(e))
         return {"error": str(e)}
 
-
-
-
-# 📌 Test des features attendues
-expected_features = ["feature1", "feature2", "feature3", "feature4", "feature5"]
-print("🟢 Les features attendues :", expected_features)
