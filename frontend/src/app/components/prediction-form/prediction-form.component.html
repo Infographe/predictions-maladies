@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>Prédiction en temps réel</h2>
+
+  <form (submit)="envoyerDonnees(); $event.preventDefault()">
+    <label>Feature 1: <input type="number" [(ngModel)]="formData.feature1" name="feature1"></label>
+    <label>Feature 2: <input type="number" [(ngModel)]="formData.feature2" name="feature2"></label>
+    <label>Feature 3: <input type="number" [(ngModel)]="formData.feature3" name="feature3"></label>
+    <label>Feature 4: <input type="number" [(ngModel)]="formData.feature4" name="feature4"></label>
+    <label>Feature 5: <input type="number" [(ngModel)]="formData.feature5" name="feature5"></label>
+
+    <button type="submit" [disabled]="isLoading">
+      {{ isLoading ? '⏳ Prédiction en cours...' : '🔍 Lancer la prédiction' }}
+    </button>
+  </form>
+
+  <div *ngIf="prediction !== null" class="prediction-result">
+    <h3>Résultat : {{ prediction }}</h3>
+  </div>
+</div>
