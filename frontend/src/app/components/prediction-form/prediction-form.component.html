@@ -1,80 +1,67 @@
+<div class="container mt-4">
+  <h2 class="text-center">🔮 Prédictions</h2>
 
-
-<mat-card class="prediction-card">
-  <mat-card-title>📊 Prédictions en temps réel</mat-card-title>
-
-  <mat-card-content>
-    <form (ngSubmit)="envoyerDonnees()">
-      <div class="form-group">
-        <mat-form-field appearance="outline">
-          <mat-label>Feature 1</mat-label>
-          <input matInput type="number" [(ngModel)]="formData.feature1" name="feature1" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Feature 2</mat-label>
-          <input matInput type="number" [(ngModel)]="formData.feature2" name="feature2" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Feature 3</mat-label>
-          <input matInput type="number" [(ngModel)]="formData.feature3" name="feature3" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Feature 4</mat-label>
-          <input matInput type="number" [(ngModel)]="formData.feature4" name="feature4" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Feature 5</mat-label>
-          <input matInput type="number" [(ngModel)]="formData.feature5" name="feature5" required>
-        </mat-form-field>
+  <div class="card shadow p-4">
+    <form (ngSubmit)="envoyerDonnees()" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Feature 1</label>
+        <input type="number" class="form-control" [(ngModel)]="formData.feature1" name="feature1" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Feature 2</label>
+        <input type="number" class="form-control" [(ngModel)]="formData.feature2" name="feature2" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Feature 3</label>
+        <input type="number" class="form-control" [(ngModel)]="formData.feature3" name="feature3" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Feature 4</label>
+        <input type="number" class="form-control" [(ngModel)]="formData.feature4" name="feature4" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Feature 5</label>
+        <input type="number" class="form-control" [(ngModel)]="formData.feature5" name="feature5" required>
       </div>
 
-      <button mat-raised-button color="primary" type="submit">🚀 Envoyer</button>
+      <div class="col-12 text-center mt-3">
+        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+          <span *ngIf="isLoading">⏳ Prédiction en cours...</span>
+          <span *ngIf="!isLoading">🔍 Prédire</span>
+        </button>
+      </div>
     </form>
-  </mat-card-content>
-</mat-card>
+  </div>
 
-<!-- 🔥 Tableau des prédictions -->
-<mat-card class="history-card" *ngIf="historiquePredictions.length > 0">
-  <mat-card-title>📜 Historique des prédictions</mat-card-title>
+  <!-- 🔍 Filtres avec des champs individuels -->
+  <div class="row mt-3">
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature1" (input)="applyFilter()" placeholder="Filtrer Feature 1"></div>
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature2" (input)="applyFilter()" placeholder="Filtrer Feature 2"></div>
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature3" (input)="applyFilter()" placeholder="Filtrer Feature 3"></div>
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature4" (input)="applyFilter()" placeholder="Filtrer Feature 4"></div>
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature5" (input)="applyFilter()" placeholder="Filtrer Feature 5"></div>
+    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterPrediction" (input)="applyFilter()" placeholder="Filtrer Prédiction"></div>
+  </div>
 
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- Tableau des prédictions -->
+  <div class="mt-4">
+    <h4>📜 Historique des Prédictions</h4>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table table-striped">
+      <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
+        <th mat-header-cell *matHeaderCellDef> {{ col | titlecase }} </th>
+        <td mat-cell *matCellDef="let element"> {{ element[col] }} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="feature1">
-      <th mat-header-cell *matHeaderCellDef> Feature 1 </th>
-      <td mat-cell *matCellDef="let element"> {{element.feature1}} </td>
-    </ng-container>
+      <thead>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      </thead>
+      <tbody>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <ng-container matColumnDef="feature2">
-      <th mat-header-cell *matHeaderCellDef> Feature 2 </th>
-      <td mat-cell *matCellDef="let element"> {{element.feature2}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="feature3">
-      <th mat-header-cell *matHeaderCellDef> Feature 3 </th>
-      <td mat-cell *matCellDef="let element"> {{element.feature3}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="feature4">
-      <th mat-header-cell *matHeaderCellDef> Feature 4 </th>
-      <td mat-cell *matCellDef="let element"> {{element.feature4}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="feature5">
-      <th mat-header-cell *matHeaderCellDef> Feature 5 </th>
-      <td mat-cell *matCellDef="let element"> {{element.feature5}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="prediction">
-      <th mat-header-cell *matHeaderCellDef> Prédiction </th>
-      <td mat-cell *matCellDef="let element"> {{element.prediction}} </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-  </table>
-</mat-card>
+  <div class="text-center">
+    <button class="btn btn-danger mt-3" (click)="effacerHistorique()">🗑️ Effacer l'historique</button>
+  </div>
+</div>

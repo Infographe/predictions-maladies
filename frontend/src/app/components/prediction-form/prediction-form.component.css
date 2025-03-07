@@ -345,3 +345,185 @@ table {
 th, td {
   text-align: center;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.prediction-row {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.loading {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1976d2;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.5; }
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.container {
+  max-width: 800px;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+button:disabled {
+  background-color: #ccc !important;
+  cursor: not-allowed;
+}
+
+.alert {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+table tbody tr {
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+}
+
+table tbody tr.ng-star-inserted {
+  opacity: 1;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.filters input {
+  width: 150px;
+  padding: 5px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.mat-elevation-z8 {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+tr.mat-row {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  border-radius: 8px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mat-elevation-z8 {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.container {
+  max-width: 900px;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+input {
+  border-radius: 8px;
+}
+
+button {
+  border-radius: 8px;
+}
+
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #343a40;
+  color: white;
+}
+
+tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: 0.3s;
+}
+
+.alert {
+  font-size: 1.2em;
+}

@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { PredictionService } from './services/prediction.service';
+import { PredictionService, PredictionData } from './services/prediction.service';
 import { PredictionFormComponent } from './components/prediction-form/prediction-form.component';
 
 @Component({
@@ -35,7 +35,7 @@ export class AppComponent {
   constructor(private predictionService: PredictionService) {}
 
   envoyerDonnees() {
-    const inputData = { feature1: 1.5, feature2: 3.2 };  // Exemple de données
+    const inputData: PredictionData = { feature1: 1.5, feature2: 3.2, feature3: 2.1, feature4: 4.5, feature5: 0.9 };  // ✅ Toutes les features
     this.predictionService.getPrediction(inputData).subscribe(response => {
       this.prediction = response;
     });
