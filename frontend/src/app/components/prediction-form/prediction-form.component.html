@@ -41,8 +41,8 @@
 <mat-card class="history-card" *ngIf="historiquePredictions.length > 0">
   <mat-card-title>📜 Historique des prédictions</mat-card-title>
 
-  <table mat-table [dataSource]="historiquePredictions" class="mat-elevation-z8">
-    
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
     <ng-container matColumnDef="feature1">
       <th mat-header-cell *matHeaderCellDef> Feature 1 </th>
       <td mat-cell *matCellDef="let element"> {{element.feature1}} </td>
@@ -73,10 +73,8 @@
       <td mat-cell *matCellDef="let element"> {{element.prediction}} </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction'];"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
   </table>
-  <mat-card-actions *ngIf="prediction">
-    <p>✅ Prédiction : <strong>{{ prediction }}</strong></p>
-  </mat-card-actions>
 </mat-card>
