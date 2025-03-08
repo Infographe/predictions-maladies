@@ -1,5 +1,14 @@
-<div class="container mt-4">
+<div class="container mt-4" [class.dark]="isDarkMode">
   <h2 class="text-center">🔮 Prédictions</h2>
+
+  <!-- Toggle Mode Sombre -->
+  <div class="text-end">
+    <button class="btn btn-secondary" (click)="toggleDarkMode()">
+      <fa-icon [icon]="isDarkMode ? faSun : faMoon"></fa-icon>
+      {{ isDarkMode ? 'Mode Clair' : 'Mode Sombre' }}
+    </button>
+
+  </div>
 
   <div class="card shadow p-4 fade show">
     <form (ngSubmit)="envoyerDonnees()" class="row g-3">
@@ -9,10 +18,13 @@
       </div>
 
       <div class="col-12 text-center mt-3">
-        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <button type="submit" class="btn btn-primary mt-3" [disabled]="isLoading">
           <fa-icon *ngIf="!isLoading" [icon]="faSearch"></fa-icon> Prédire
           <fa-icon *ngIf="isLoading" [icon]="faSpinner" spin></fa-icon> 
         </button>
+        
+        
+        
         <button class="btn btn-danger mt-3" (click)="effacerHistorique()">
           <fa-icon [icon]="faTrash"></fa-icon> Effacer l'historique
         </button>
@@ -35,7 +47,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ col | titlecase }} </th>
         <td mat-cell *matCellDef="let element"> {{ element[col] }} </td>
       </ng-container>
-
+    
       <thead>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       </thead>
@@ -43,10 +55,11 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="fade-in"></tr>
       </tbody>
     </table>
-  </div>
+    
 
-  <!-- Pagination -->
-  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <!-- Pagination -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
 
   <!-- Boutons d'export -->
   <div class="text-center mt-3">

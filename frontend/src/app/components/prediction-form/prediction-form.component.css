@@ -1,369 +1,85 @@
-/* Styles du conteneur du formulaire */
-.form-container {
-  max-width: 400px;
-  margin: 30px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* Styles des champs de saisie */
-input {
-  width: 90%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Bouton de soumission */
-button {
-  width: 100%;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* Styles pour le message de prédiction */
-.prediction-result {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 5px;
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-}
-
-/* Loader animé */
-.loading {
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #007bff;
-  animation: blink 1.5s infinite;
-}
-
-button {
-  width: 100%;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-  position: relative;
-}
-
-button:disabled {
-  background-color: #b0c4de;
-  cursor: not-allowed;
-}
-
-button.loading::after {
-  content: "⏳";
-  font-size: 16px;
-  position: absolute;
-  right: 15px;
-}
-
-mat-card {
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 20px;
-  text-align: center;
-}
-
-mat-form-field {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-button {
-  width: 100%;
-}
-
-.result {
-  margin-top: 20px;
-  font-size: 1.2em;
-  color: #00796b;
-}
-
-
-.error-message {
-  margin-top: 10px;
-  color: #ff4c4c;
-  font-weight: bold;
-  background: #ffe6e6;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ff4c4c;
-}
-
-.prediction-card {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f4f4f4;
-  border-left: 5px solid #007bff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out;
-  text-align: center;
-}
-
-.prediction-card:hover {
-  transform: scale(1.02);
-}
-
-.prediction-card h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: #007bff;
-}
-
-.prediction-card p {
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-}
-
-.prediction-card {
-  max-width: 500px;
+/* 🌟 Conteneur principal */
+.container {
+  max-width: 900px;
   margin: auto;
   padding: 20px;
 }
 
-mat-form-field {
+/* 🌟 Style des cartes */
+.card {
+  border-radius: 10px;
+  padding: 20px;
+  background: var(--bg-color);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🌟 Champs de saisie */
+input {
   width: 100%;
-  margin-bottom: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease-in-out;
 }
 
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
 }
 
+/* 🌟 Boutons */
 button {
-  width: 100%;
-  display: flex;
+  width: auto;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-.result-card {
-  background-color: #e3f2fd;
-  margin-top: 20px;
-  padding: 15px;
-  text-align: center;
+button:hover {
+  transform: scale(1.05);
 }
 
-.prediction-result {
-  font-size: 18px;
-  font-weight: bold;
+.btn-primary {
+  /* background-color: var(--primary-color); */
+  color: white;
 }
 
-.error-card {
-  background-color: #ffebee;
-  color: #d32f2f;
-  margin-top: 20px;
-  padding: 15px;
-  text-align: center;
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
 }
 
-.error-message {
-  font-weight: bold;
+.btn-success {
+  background-color: #28a745;
+  color: white;
 }
 
-
-@keyframes blink {
-  50% { opacity: 0.5; }
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Désactiver bouton */
+button:disabled {
+  background-color: #b0c4de;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.prediction-card {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-}
-
-mat-form-field {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.result-card {
-  background-color: #e3f2fd;
-  margin-top: 20px;
-  padding: 15px;
-  text-align: center;
-}
-
-.prediction-result {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.error-card {
-  background-color: #ffebee;
-  color: #d32f2f;
-  margin-top: 20px;
-  padding: 15px;
-  text-align: center;
-}
-
-.error-message {
-  font-weight: bold;
-}
-
-.prediction-card, .history-card {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-button {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.prediction-card {
-  width: 400px;
-  margin: auto;
-  padding: 20px;
-  text-align: center;
-}
-
-mat-form-field {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-button {
-  width: 100%;
-  margin-top: 15px;
-}
-
-.result-card {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #e3f2fd;
-  border-radius: 10px;
-}
-
-.historique-card {
-  margin-top: 20px;
-  padding: 20px;
-  width: 100%;
-}
-
-.mat-elevation-z8 {
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 10px;
-}
-
-.prediction-card {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-button {
-  margin-top: 15px;
-  width: 100%;
-}
-
-.prediction-card, .history-card {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-button {
-  margin-top: 15px;
-  width: 100%;
-}
-
-table {
-  width: 100%;
-  margin-top: 10px;
-}
-
-th, td {
-  text-align: center;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.prediction-row {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.5s ease-out;
-}
-
+/* 🌟 Loader animé */
 .loading {
   font-size: 18px;
   font-weight: bold;
-  color: #1976d2;
+  color: var(--primary-color);
   animation: blink 1s infinite;
 }
 
@@ -371,54 +87,42 @@ th, td {
   50% { opacity: 0.5; }
 }
 
-.error-message {
-  color: red;
-  font-weight: bold;
+/* 🌟 Tableaux */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
 }
 
-.container {
-  max-width: 800px;
+th, td {
+  padding: 10px;
+  text-align: center;
 }
 
-.card {
-  border-radius: 10px;
+th {
+  background-color: var(--primary-color);
+  color: white;
 }
 
-button:disabled {
-  background-color: #ccc !important;
-  cursor: not-allowed;
+tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: 0.3s;
 }
 
-.alert {
-  font-size: 18px;
-  font-weight: bold;
+/* 🌟 Pagination */
+mat-paginator {
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  padding: 10px;
+  color: var(--text-color);
 }
 
-table tbody tr {
-  transition: all 0.5s ease-in-out;
-  opacity: 0;
-}
-
-table tbody tr.ng-star-inserted {
-  opacity: 1;
-}
-
+/* 🌟 Filtres */
 .filters {
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
-}
-
-.filters input {
-  width: 150px;
-  padding: 5px;
-}
-
-.filters {
-  display: flex;
   flex-wrap: wrap;
-  gap: 10px;
   margin-bottom: 20px;
 }
 
@@ -427,21 +131,15 @@ table tbody tr.ng-star-inserted {
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ddd;
-}
-
-.mat-elevation-z8 {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-button {
   transition: all 0.3s ease-in-out;
 }
 
-button:hover {
-  transform: scale(1.05);
+.filters input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
 }
 
+/* 🌟 Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -453,118 +151,36 @@ button:hover {
   }
 }
 
-tr.mat-row {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-}
-
-.card {
-  border-radius: 8px;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.alert {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.mat-elevation-z8 {
-  width: 100%;
-  margin-top: 20px;
-}
-
-.table-hover tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.container {
-  max-width: 900px;
-}
-
-.card {
-  border-radius: 10px;
-}
-
-input {
-  border-radius: 8px;
-}
-
-button {
-  border-radius: 8px;
-}
-
-.table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 10px;
-  text-align: center;
-}
-
-th {
-  background-color: #343a40;
-  color: white;
-}
-
-tbody tr:hover {
-  background-color: #f8f9fa;
-  transition: 0.3s;
-}
-
-.alert {
-  font-size: 1.2em;
-}
-
-/* Ajout d'un effet visuel */
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-}
-
-tr:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s ease;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Animation d'affichage */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.card {
-  animation: fadeIn 0.5s ease-out;
-}
-
 .fade-in {
-  opacity: 0;
   animation: fadeIn 0.5s forwards;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* 🌟 Mode sombre */
+:root {
+  --primary-color: #007bff;
+  --bg-color: white;
+  --text-color: black;
+}
+
+.dark-mode {
+  --primary-color: #ffcc00;
+  --bg-color: #121212;
+  --text-color: white;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 🌟 Snackbar */
+.error-snackbar {
+  background: #ff4c4c;
+  color: white;
+}
+
+.success-snackbar {
+  background: #4caf50;
+  color: white;
 }

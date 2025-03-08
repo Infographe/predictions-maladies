@@ -11,9 +11,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PredictionService } from '../../services/prediction.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faTrash, faSpinner, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTrash, faSpinner, faDownload, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -58,6 +59,8 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   faTrash = faTrash;
   faSpinner = faSpinner;
   faDownload = faDownload;
+  faSun = faSun;
+  faMoon = faMoon;
 
   formData: PredictionData = {
     feature1: 0,
@@ -69,6 +72,8 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   };
 
   isLoading = false;
+  isDarkMode: boolean = false; // Par défaut, mode clair
+
   errorMessage: string | null = null;
   historiquePredictions: PredictionData[] = [];
   displayedColumns: string[] = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction'];
@@ -79,11 +84,23 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
 
   constructor(
     private predictionService: PredictionService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar // ✅ Ajout du service de notification
+
   ) {}
 
   ngOnInit() {
     this.dataSource.data = this.historiquePredictions;
+
+    // 🔥 Charger le mode sombre depuis localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode) {
+      this.isDarkMode = JSON.parse(savedMode);
+      this.appliquerTheme(); // Appliquer immédiatement le thème
+    }    
+
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   ngAfterViewInit() {
@@ -91,25 +108,56 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  envoyerDonnees() {
-    this.isLoading = true;
-    this.errorMessage = null;
+   /** ✅ Correction du Mode Sombre */
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
+    
+    // Assurer la prise en compte de la classe dans le DOM
+    setTimeout(() => {
+      this.appliquerTheme();
+    }, 50);
+  }
 
-    this.predictionService.getPrediction(this.formData).subscribe(response => {
-      this.isLoading = false;
-      this.formData.prediction = response.prediction;
+  appliquerTheme() {
+    document.body.classList.toggle('dark-mode', this.isDarkMode);
+  }
 
-      const newEntry: PredictionData = { ...this.formData };
-
-      this.historiquePredictions.unshift(newEntry);
-      this.dataSource.data = [...this.historiquePredictions];
-      this.applyFilter();
-      this.cdr.detectChanges();
-    }, error => {
-      this.isLoading = false;
-      this.errorMessage = "❌ Erreur lors de la prédiction.";
+  showNotification(message: string, isError: boolean = false) {
+    this.snackBar.open(message, 'OK', {
+      duration: 3000,
+      panelClass: isError ? 'error-snackbar' : 'success-snackbar',
     });
   }
+
+  /** ✅ Correction du Bouton "Prédire" */
+  /** ✅ Correction du Bouton "Prédire" */
+envoyerDonnees() {
+  this.isLoading = true; 
+  this.errorMessage = null;
+
+  this.cdr.detectChanges(); // 🔄 Met à jour l'affichage immédiatement
+
+  this.predictionService.getPrediction(this.formData).subscribe(response => {
+    this.isLoading = false; // ✅ Réactive le bouton après la réponse
+    this.formData.prediction = response.prediction;
+
+    const newEntry: PredictionData = { ...this.formData };
+    this.historiquePredictions.unshift(newEntry);
+    
+    // 🔥 Met à jour la source de données et réapplique le tri
+    this.dataSource.data = [...this.historiquePredictions];
+    this.dataSource.sort = this.sort; // 🔥 Réassocier le tri pour qu'il fonctionne
+
+    this.applyFilter();
+    this.cdr.detectChanges(); // 🔄 Forcer la mise à jour visuelle
+  }, error => {
+    this.isLoading = false; // ✅ En cas d'erreur, on réactive aussi le bouton
+    this.errorMessage = "❌ Erreur lors de la prédiction.";
+    this.cdr.detectChanges();
+  });
+}
+
 
   applyFilter() {
     this.dataSource.data = this.historiquePredictions.filter(entry =>
@@ -146,5 +194,6 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
     this.historiquePredictions = [];
     this.dataSource.data = [];
     this.cdr.detectChanges();
+    this.snackBar.open("🗑️ Historique effacé.", "Fermer", { duration: 2000 });
   }
 }
