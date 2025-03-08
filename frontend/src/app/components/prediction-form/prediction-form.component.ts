@@ -16,6 +16,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faTrash, faSpinner, faDownload, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 
+
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+Chart.register(...registerables);
+
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -72,7 +76,6 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   };
 
   isLoading = false;
-  isDarkMode: boolean = false; // Par défaut, mode clair
 
   errorMessage: string | null = null;
   historiquePredictions: PredictionData[] = [];
@@ -91,14 +94,6 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.dataSource.data = this.historiquePredictions;
-
-    // 🔥 Charger le mode sombre depuis localStorage
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      this.isDarkMode = JSON.parse(savedMode);
-      this.appliquerTheme(); // Appliquer immédiatement le thème
-    }    
-
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -106,21 +101,6 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-   /** ✅ Correction du Mode Sombre */
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
-    
-    // Assurer la prise en compte de la classe dans le DOM
-    setTimeout(() => {
-      this.appliquerTheme();
-    }, 50);
-  }
-
-  appliquerTheme() {
-    document.body.classList.toggle('dark-mode', this.isDarkMode);
   }
 
   showNotification(message: string, isError: boolean = false) {
@@ -131,33 +111,66 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   }
 
   /** ✅ Correction du Bouton "Prédire" */
-  /** ✅ Correction du Bouton "Prédire" */
-envoyerDonnees() {
-  this.isLoading = true; 
-  this.errorMessage = null;
-
-  this.cdr.detectChanges(); // 🔄 Met à jour l'affichage immédiatement
-
-  this.predictionService.getPrediction(this.formData).subscribe(response => {
-    this.isLoading = false; // ✅ Réactive le bouton après la réponse
-    this.formData.prediction = response.prediction;
-
-    const newEntry: PredictionData = { ...this.formData };
-    this.historiquePredictions.unshift(newEntry);
-    
-    // 🔥 Met à jour la source de données et réapplique le tri
-    this.dataSource.data = [...this.historiquePredictions];
-    this.dataSource.sort = this.sort; // 🔥 Réassocier le tri pour qu'il fonctionne
-
-    this.applyFilter();
-    this.cdr.detectChanges(); // 🔄 Forcer la mise à jour visuelle
-  }, error => {
-    this.isLoading = false; // ✅ En cas d'erreur, on réactive aussi le bouton
-    this.errorMessage = "❌ Erreur lors de la prédiction.";
+  envoyerDonnees() {
+    this.isLoading = true;
+    this.errorMessage = null;
     this.cdr.detectChanges();
-  });
-}
+  
+    this.predictionService.getPrediction(this.formData).subscribe(response => {
+      this.isLoading = false;
+      this.formData.prediction = response.prediction;
+  
+      const newEntry: PredictionData = { ...this.formData };
+      this.historiquePredictions.unshift(newEntry);
+      this.dataSource.data = [...this.historiquePredictions];
+      this.dataSource.sort = this.sort;
+      this.applyFilter();
+      this.cdr.detectChanges();
+      this.updateChart();
 
+  
+      // ✅ Nouvelle notification
+      this.showNotification("✅ Prédiction réussie !", false);
+    }, error => {
+      this.isLoading = false;
+      this.errorMessage = "❌ Erreur lors de la prédiction.";
+      this.showNotification("❌ Erreur lors de la prédiction.", true);
+      this.cdr.detectChanges();
+    });
+  }
+  
+  /** ✅ Graphiques */
+  private updateChart() {
+    const ctx = document.getElementById('predictionChart') as HTMLCanvasElement;
+    if (!ctx) return;
+  
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+  
+    const labels = this.historiquePredictions.map((_, index) => `Prédiction ${index + 1}`);
+    const dataValues = this.historiquePredictions.map(pred => pred.prediction);
+  
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Évolution des Prédictions',
+          data: dataValues,
+          backgroundColor: 'rgba(0, 123, 255, 0.5)',
+          borderColor: 'rgba(0, 123, 255, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  }
+  
 
   applyFilter() {
     this.dataSource.data = this.historiquePredictions.filter(entry =>
