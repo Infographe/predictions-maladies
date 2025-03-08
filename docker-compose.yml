@@ -3,17 +3,26 @@ version: "3.8"
 services:
   backend:
     build: ./backend
+    container_name: backend-api
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - backend_data:/app
+    environment:
+      - MODEL_DIR=/app/models
+    restart: always
 
   frontend:
     build: ./frontend
+    container_name: frontend-app
     ports:
       - "4200:80"
     depends_on:
       - backend
+    volumes:
+      - frontend_data:/app
+    restart: always
 
 volumes:
-  backend:
+  backend_data:
+  frontend_data:

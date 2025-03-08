@@ -1,7 +1,9 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
@@ -9,6 +11,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PredictionService } from '../../services/prediction.service';
+import { HttpClient } from '@angular/common/http';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSearch, faTrash, faSpinner, faDownload } from '@fortawesome/free-solid-svg-icons';
+
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 export interface PredictionData {
   feature1: number;
@@ -17,6 +25,8 @@ export interface PredictionData {
   feature4: number;
   feature5: number;
   prediction: string;
+  model_name?: string;
+  [key: string]: any;
 }
 
 @Component({
@@ -28,15 +38,31 @@ export interface PredictionData {
     CommonModule,
     FormsModule,
     MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
     MatCardModule,
     MatButtonModule,
     MatListModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FontAwesomeModule
   ]
 })
-export class PredictionFormComponent implements OnInit {
+export class PredictionFormComponent implements OnInit, AfterViewInit {
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  models: string[] = [];
+  selectedModel: string = "";
+
+  // Icônes FontAwesome
+  faSearch = faSearch;
+  faTrash = faTrash;
+  faSpinner = faSpinner;
+  faDownload = faDownload;
+
   formData: PredictionData = {
     feature1: 0,
     feature2: 0,
@@ -51,58 +77,90 @@ export class PredictionFormComponent implements OnInit {
   historiquePredictions: PredictionData[] = [];
   displayedColumns: string[] = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction'];
   dataSource = new MatTableDataSource<PredictionData>([]);
-
-  // 🔍 Filtres déclarés individuellement
-  filterFeature1: string = '';
-  filterFeature2: string = '';
-  filterFeature3: string = '';
-  filterFeature4: string = '';
-  filterFeature5: string = '';
-  filterPrediction: string = '';
+  filterFeatures: string[] = ['', '', '', '', '', ''];
 
   constructor(
     private predictionService: PredictionService,
+    private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.dataSource.data = this.historiquePredictions;
+    this.fetchModels();
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  fetchModels() {
+    this.http.get<{ models: string[] }>("http://127.0.0.1:8000/reload-models").subscribe(response => {
+      this.models = response.models;
+      this.selectedModel = this.models.length ? this.models[0] : "";
+      this.cdr.detectChanges();
+    });
   }
 
   envoyerDonnees() {
     this.isLoading = true;
-    this.predictionService.getPrediction(this.formData).subscribe(response => {
+    this.errorMessage = null;
+
+    const requestData = {
+      ...this.formData,
+      model_name: this.selectedModel
+    };
+
+    this.predictionService.getPrediction(requestData).subscribe(response => {
       this.isLoading = false;
       this.formData.prediction = response.prediction;
 
-      const newEntry: PredictionData = { ...this.formData };
-
+      const newEntry = { ...this.formData };
       this.historiquePredictions.unshift(newEntry);
+      this.dataSource.data = [...this.historiquePredictions];
       this.applyFilter();
       this.cdr.detectChanges();
     }, error => {
       this.isLoading = false;
-      this.errorMessage = "Erreur lors de la prédiction.";
+      this.errorMessage = "❌ Erreur lors de la prédiction.";
     });
   }
 
   applyFilter() {
-    let filteredData = this.historiquePredictions.filter(entry => {
-      return (
-        (this.filterFeature1 === "" || entry.feature1.toString().includes(this.filterFeature1)) &&
-        (this.filterFeature2 === "" || entry.feature2.toString().includes(this.filterFeature2)) &&
-        (this.filterFeature3 === "" || entry.feature3.toString().includes(this.filterFeature3)) &&
-        (this.filterFeature4 === "" || entry.feature4.toString().includes(this.filterFeature4)) &&
-        (this.filterFeature5 === "" || entry.feature5.toString().includes(this.filterFeature5)) &&
-        (this.filterPrediction === "" || entry.prediction.toString().includes(this.filterPrediction))
-      );
-    });
+    this.dataSource.data = this.historiquePredictions.filter(entry =>
+      this.displayedColumns.every((col, index) =>
+        this.filterFeatures[index] === "" || entry[col].toString().includes(this.filterFeatures[index])
+      )
+    );
+  }
 
-    this.dataSource.data = filteredData;
+  exporterCSV() {
+    const header = Object.keys(this.historiquePredictions[0]).join(",");
+    const rows = this.historiquePredictions.map(row => Object.values(row).join(","));
+    const csvContent = "data:text/csv;charset=utf-8," + [header, ...rows].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "historique_predictions.csv");
+    document.body.appendChild(link);
+    link.click();
+  }
+
+  exporterExcel() {
+    const worksheet = XLSX.utils.json_to_sheet(this.historiquePredictions);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Prédictions");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "historique_predictions.xlsx");
   }
 
   effacerHistorique() {
     this.historiquePredictions = [];
     this.dataSource.data = [];
+    this.cdr.detectChanges();
   }
 }

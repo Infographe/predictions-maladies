@@ -1,49 +1,41 @@
 <div class="container mt-4">
-  <h2 class="text-center">🔮 Prédictions</h2>
+  <h2 class="text-center fade-in">🔮 Prédictions</h2>
 
-  <div class="card shadow p-4">
+  <div class="card shadow p-4 fade show">
     <form (ngSubmit)="envoyerDonnees()" class="row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Feature 1</label>
-        <input type="number" class="form-control" [(ngModel)]="formData.feature1" name="feature1" required>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Feature 2</label>
-        <input type="number" class="form-control" [(ngModel)]="formData.feature2" name="feature2" required>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Feature 3</label>
-        <input type="number" class="form-control" [(ngModel)]="formData.feature3" name="feature3" required>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Feature 4</label>
-        <input type="number" class="form-control" [(ngModel)]="formData.feature4" name="feature4" required>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label">Feature 5</label>
-        <input type="number" class="form-control" [(ngModel)]="formData.feature5" name="feature5" required>
+      <div class="col-md-4" *ngFor="let feature of displayedColumns.slice(0,5); let i = index">
+        <label class="form-label">{{ feature | titlecase }}</label>
+        <input type="number" class="form-control" [(ngModel)]="formData[feature]" name="{{ feature }}" required>
       </div>
 
       <div class="col-12 text-center mt-3">
         <button type="submit" class="btn btn-primary" [disabled]="isLoading">
-          <span *ngIf="isLoading">⏳ Prédiction en cours...</span>
-          <span *ngIf="!isLoading">🔍 Prédire</span>
+          <fa-icon *ngIf="!isLoading" [icon]="faSearch"></fa-icon> Prédire
+          <fa-icon *ngIf="isLoading" [icon]="faSpinner" spin></fa-icon> 
+        </button>
+
+        <button class="btn btn-danger mt-3" (click)="effacerHistorique()">
+          <fa-icon [icon]="faTrash"></fa-icon> Effacer l'historique
         </button>
       </div>
     </form>
   </div>
+  <div class="col-md-4">
+    <label class="form-label">📌 Sélection du modèle</label>
+    <select class="form-control" [(ngModel)]="selectedModel">
+      <option *ngFor="let model of models" [value]="model">{{ model }}</option>
+    </select>
+  </div>
+  
 
-  <!-- 🔍 Filtres avec des champs individuels -->
+  <!-- 🔍 Filtres dynamiques -->
   <div class="row mt-3">
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature1" (input)="applyFilter()" placeholder="Filtrer Feature 1"></div>
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature2" (input)="applyFilter()" placeholder="Filtrer Feature 2"></div>
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature3" (input)="applyFilter()" placeholder="Filtrer Feature 3"></div>
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature4" (input)="applyFilter()" placeholder="Filtrer Feature 4"></div>
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterFeature5" (input)="applyFilter()" placeholder="Filtrer Feature 5"></div>
-    <div class="col-md-2"><input type="text" class="form-control" [(ngModel)]="filterPrediction" (input)="applyFilter()" placeholder="Filtrer Prédiction"></div>
+    <div class="col-md-2" *ngFor="let feature of displayedColumns; let i = index">
+      <input type="text" class="form-control" [(ngModel)]="filterFeatures[i]" (input)="applyFilter()" placeholder="Filtrer {{ feature | titlecase }}">
+    </div>
   </div>
 
-  <!-- Tableau des prédictions -->
+  <!-- 📜 Historique des Prédictions -->
   <div class="mt-4">
     <h4>📜 Historique des Prédictions</h4>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table table-striped">
@@ -56,12 +48,17 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       </thead>
       <tbody>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="fade-in"></tr>
       </tbody>
     </table>
   </div>
 
-  <div class="text-center">
-    <button class="btn btn-danger mt-3" (click)="effacerHistorique()">🗑️ Effacer l'historique</button>
+  <!-- Pagination -->
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
+  <!-- Boutons d'export -->
+  <div class="text-center mt-3">
+    <button class="btn btn-success" (click)="exporterCSV()">📥 Exporter en CSV</button>
+    <button class="btn btn-info" (click)="exporterExcel()">📊 Exporter en Excel</button>
   </div>
 </div>
