@@ -1,20 +1,18 @@
-# Utilisation d'une image légère de Python
-FROM python:3.9-slim
+# Utiliser l'image Python officielle
+FROM python:3.12
 
-# Définition du dossier de travail
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copie des fichiers nécessaires
-COPY requirements.txt .
-COPY main.py .
-COPY model_manager.py .
-COPY models/ models/
-
-# Installation des dépendances
+# Copier les fichiers nécessaires
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Exposition du port 8000
+# Copier le reste du code
+COPY . .
+
+# Exposer le port 8000 pour FastAPI
 EXPOSE 8000
 
-# Commande de lancement
+# Commande pour démarrer FastAPI
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

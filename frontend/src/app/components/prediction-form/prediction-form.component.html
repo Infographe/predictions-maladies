@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  <h2 class="text-center fade-in">🔮 Prédictions</h2>
+  <h2 class="text-center">🔮 Prédictions</h2>
 
   <div class="card shadow p-4 fade show">
     <form (ngSubmit)="envoyerDonnees()" class="row g-3">
@@ -13,20 +13,12 @@
           <fa-icon *ngIf="!isLoading" [icon]="faSearch"></fa-icon> Prédire
           <fa-icon *ngIf="isLoading" [icon]="faSpinner" spin></fa-icon> 
         </button>
-
         <button class="btn btn-danger mt-3" (click)="effacerHistorique()">
           <fa-icon [icon]="faTrash"></fa-icon> Effacer l'historique
         </button>
       </div>
     </form>
   </div>
-  <div class="col-md-4">
-    <label class="form-label">📌 Sélection du modèle</label>
-    <select class="form-control" [(ngModel)]="selectedModel">
-      <option *ngFor="let model of models" [value]="model">{{ model }}</option>
-    </select>
-  </div>
-  
 
   <!-- 🔍 Filtres dynamiques -->
   <div class="row mt-3">
@@ -38,9 +30,9 @@
   <!-- 📜 Historique des Prédictions -->
   <div class="mt-4">
     <h4>📜 Historique des Prédictions</h4>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table table-striped">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 table table-striped">
       <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
-        <th mat-header-cell *matHeaderCellDef> {{ col | titlecase }} </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ col | titlecase }} </th>
         <td mat-cell *matCellDef="let element"> {{ element[col] }} </td>
       </ng-container>
 

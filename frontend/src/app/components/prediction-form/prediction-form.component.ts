@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PredictionService } from '../../services/prediction.service';
-import { HttpClient } from '@angular/common/http';
+
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faTrash, faSpinner, faDownload } from '@fortawesome/free-solid-svg-icons';
 
@@ -25,7 +25,6 @@ export interface PredictionData {
   feature4: number;
   feature5: number;
   prediction: string;
-  model_name?: string;
   [key: string]: any;
 }
 
@@ -54,9 +53,6 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  models: string[] = [];
-  selectedModel: string = "";
-
   // Icônes FontAwesome
   faSearch = faSearch;
   faTrash = faTrash;
@@ -77,17 +73,17 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   historiquePredictions: PredictionData[] = [];
   displayedColumns: string[] = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prediction'];
   dataSource = new MatTableDataSource<PredictionData>([]);
+
+  // Filtres dynamiques
   filterFeatures: string[] = ['', '', '', '', '', ''];
 
   constructor(
     private predictionService: PredictionService,
-    private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.dataSource.data = this.historiquePredictions;
-    this.fetchModels();
   }
 
   ngAfterViewInit() {
@@ -95,28 +91,16 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  fetchModels() {
-    this.http.get<{ models: string[] }>("http://127.0.0.1:8000/reload-models").subscribe(response => {
-      this.models = response.models;
-      this.selectedModel = this.models.length ? this.models[0] : "";
-      this.cdr.detectChanges();
-    });
-  }
-
   envoyerDonnees() {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const requestData = {
-      ...this.formData,
-      model_name: this.selectedModel
-    };
-
-    this.predictionService.getPrediction(requestData).subscribe(response => {
+    this.predictionService.getPrediction(this.formData).subscribe(response => {
       this.isLoading = false;
       this.formData.prediction = response.prediction;
 
-      const newEntry = { ...this.formData };
+      const newEntry: PredictionData = { ...this.formData };
+
       this.historiquePredictions.unshift(newEntry);
       this.dataSource.data = [...this.historiquePredictions];
       this.applyFilter();
