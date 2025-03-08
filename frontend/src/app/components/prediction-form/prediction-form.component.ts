@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PredictionService } from '../../services/prediction.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faTrash, faSpinner, faDownload, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
@@ -37,6 +38,7 @@ export interface PredictionData {
   selector: 'app-prediction-form',
   templateUrl: './prediction-form.component.html',
   styleUrls: ['./prediction-form.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush, // Lazy loading 
   standalone: true,
   imports: [
     CommonModule,
@@ -140,39 +142,36 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   }
   
   /** ✅ Graphiques */
-  /** ✅ Graphiques */
-private updateChart() {
-  const ctx = document.getElementById('predictionChart') as HTMLCanvasElement;
-  if (!ctx) return;
-
-  const existingChart = Chart.getChart(ctx);
-  if (existingChart) {
-    existingChart.destroy();
-  }
-
-  // 🔄 Inverser l'ordre des labels pour que la première prédiction apparaisse en premier
-  const labels = this.historiquePredictions.map((_, index) => `Prédiction ${index + 1}`).reverse();
-  const dataValues = this.historiquePredictions.map(pred => pred.prediction).reverse();
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Évolution des Prédictions',
-        data: dataValues,
-        backgroundColor: 'rgba(0, 123, 255, 0.5)',
-        borderColor: 'rgba(0, 123, 255, 1)',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
+  private updateChart() {
+    const ctx = document.getElementById('predictionChart') as HTMLCanvasElement;
+    if (!ctx) return;
+  
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
     }
-  });
-}
-
+  
+    const labels = this.historiquePredictions.map((_, index) => `Prédiction ${index + 1}`);
+    const dataValues = this.historiquePredictions.map(pred => pred.prediction);
+  
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Évolution des Prédictions',
+          data: dataValues,
+          backgroundColor: 'rgba(0, 123, 255, 0.5)',
+          borderColor: 'rgba(0, 123, 255, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  }
   
 
   applyFilter() {
