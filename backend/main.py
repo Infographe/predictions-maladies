@@ -1,28 +1,42 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import pickle
+import dill
 import numpy as np
+import os
+import logging
 from fastapi.middleware.cors import CORSMiddleware
 
+# 🔹 Configuration des logs
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# ✅ Charger le modèle ML
-with open("models/model.pkl", "rb") as f:
-    model = pickle.load(f)
+# Vérifier si le modèle existe avant de le charger
+model_path = "models/average_model.pkl"
+
+if not os.path.exists(model_path):
+    raise FileNotFoundError(f"❌ Modèle non trouvé : {model_path}. Exécutez 'train_model.py' pour le générer.")
+
+# Charger le modèle avec gestion des erreurs
+try:
+    with open(model_path, "rb") as f:
+        model = dill.load(f)
+    logger.info(f"✅ Modèle chargé avec succès depuis {model_path}")
+except Exception as e:
+    raise RuntimeError(f"Erreur lors du chargement du modèle : {str(e)}")
 
 # Création de l'API
 app = FastAPI()
 
-# Configuration des permissions CORS (pour lier Angular au backend)
+# 🔹 Gestion des permissions CORS (Autoriser toutes les requêtes)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permet toutes les origines, à restreindre en prod
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# 📌 Modèle des données attendues par FastAPI
+# Définition des entrées pour la prédiction
 class PredictionInput(BaseModel):
     feature1: float
     feature2: float
@@ -31,18 +45,15 @@ class PredictionInput(BaseModel):
     feature5: float
 
 @app.post("/predict")
-def predict(data: dict):
-    print("🔹 Requête reçue:", data)  # 🔍 Voir si FastAPI reçoit bien la requête
-
+def predict(data: PredictionInput):
+    """
+    Prend une requête avec 5 features et retourne une prédiction.
+    """
     try:
-        features = np.array([[data["feature1"], data["feature2"], data["feature3"], data["feature4"], data["feature5"]]])
-
+        features = np.array([[data.feature1, data.feature2, data.feature3, data.feature4, data.feature5]])
         prediction = model.predict(features)[0]
-        
-        print("🔹 Prédiction effectuée:", prediction)  # 🔍 Voir la prédiction
-        
+        logger.info(f"🔍 Prédiction effectuée : {prediction}")
         return {"prediction": float(prediction)}
     except Exception as e:
-        print("❌ Erreur:", str(e))
-        return {"error": str(e)}
-
+        logger.error(f"❌ Erreur lors de la prédiction : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur interne du serveur lors de la prédiction.")

@@ -140,36 +140,39 @@ export class PredictionFormComponent implements OnInit, AfterViewInit {
   }
   
   /** ✅ Graphiques */
-  private updateChart() {
-    const ctx = document.getElementById('predictionChart') as HTMLCanvasElement;
-    if (!ctx) return;
-  
-    const existingChart = Chart.getChart(ctx);
-    if (existingChart) {
-      existingChart.destroy();
-    }
-  
-    const labels = this.historiquePredictions.map((_, index) => `Prédiction ${index + 1}`);
-    const dataValues = this.historiquePredictions.map(pred => pred.prediction);
-  
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Évolution des Prédictions',
-          data: dataValues,
-          backgroundColor: 'rgba(0, 123, 255, 0.5)',
-          borderColor: 'rgba(0, 123, 255, 1)',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    });
+  /** ✅ Graphiques */
+private updateChart() {
+  const ctx = document.getElementById('predictionChart') as HTMLCanvasElement;
+  if (!ctx) return;
+
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    existingChart.destroy();
   }
+
+  // 🔄 Inverser l'ordre des labels pour que la première prédiction apparaisse en premier
+  const labels = this.historiquePredictions.map((_, index) => `Prédiction ${index + 1}`).reverse();
+  const dataValues = this.historiquePredictions.map(pred => pred.prediction).reverse();
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Évolution des Prédictions',
+        data: dataValues,
+        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+        borderColor: 'rgba(0, 123, 255, 1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    }
+  });
+}
+
   
 
   applyFilter() {
