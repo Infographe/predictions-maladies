@@ -1,20 +1,15 @@
-import pickle
+import dill
+import numpy as np
 
-# Définir une classe pour calculer la moyenne
-class AverageModel:
-    def predict(self, X):
-        """
-        Prend une liste ou un tableau de données et renvoie la moyenne pour chaque échantillon.
-        :param X: Liste de listes ou tableau 2D où chaque sous-liste contient 5 features.
-        :return: Liste des moyennes.
-        """
-        return [sum(features) / len(features) for features in X]
+# Chemin du modèle
+ml_model_path = "models/LightGBM_best_model_2.pkl"
 
-# Créer une instance du modèle
-model = AverageModel()
+# Chargement
+with open(ml_model_path, "rb") as f:
+    model = dill.load(f)
 
-# Sauvegarder le modèle au format pkl
-with open('average_model.pkl', 'wb') as file:
-    pickle.dump(model, file)
+# Test avec des valeurs arbitraires
+features = np.array([[111, 30, 166, 195, 288, 10, 20, 0.5, 1, 0, 70, 80, 90, 60, 100, 150, 2, 4, 8, 15, 12, 150, 25, 30, 40, 5, 8, 3, 9, 7]])
+prediction = model.predict(features)
 
-print("Modèle sauvegardé sous le nom 'average_model.pkl'")
+print(f"✅ Prédiction réussie : {prediction}")
